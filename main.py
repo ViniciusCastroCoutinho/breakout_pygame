@@ -89,3 +89,90 @@ def visuals():
             for j in range(14):
                 if brick_list[i][j][1]:
                     pygame.draw.rect(screen, (255, 0, 0), brick_list[i][j][0])
+        elif i < 4:
+            for j in range(14):
+                if brick_list[i][j][1]:
+                    pygame.draw.rect(screen, (255, 165, 0), brick_list[i][j][0])
+        elif i < 6:
+            for j in range(14):
+                if brick_list[i][j][1]:
+                    pygame.draw.rect(screen, (0, 255, 0), brick_list[i][j][0])
+        else:
+            for j in range(14):
+                if brick_list[i][j][1]:
+                    pygame.draw.rect(screen, (255, 255, 0), brick_list[i][j][0])
+
+    # colored walls
+    for i in range(9):
+        # red walls
+        if i == 1 or i == 2:
+            pygame.draw.rect(screen, (255, 0, 0), (WIDTH - 10, 135 + 15 * i, 10, 10))
+            pygame.draw.rect(screen, (255, 0, 0), (0, 135 + 15 * i, 10, 10))
+
+        # orange walls
+        if i == 3 or i == 4:
+            pygame.draw.rect(screen, (255, 165, 0), (WIDTH - 10, 135 + 15 * i, 10, 10))
+            pygame.draw.rect(screen, (255, 165, 0), (0, 135 + 15 * i, 10, 10))
+
+        # green walls
+        if i == 5 or i == 6:
+            pygame.draw.rect(screen, (0, 255, 0), (WIDTH - 10, 135 + 15 * i, 10, 10))
+            pygame.draw.rect(screen, (0, 255, 0), (0, 135 + 15 * i, 10, 10))
+
+        # yellow walls
+        if i == 7 or i == 8:
+            pygame.draw.rect(screen, (255, 255, 0), (WIDTH - 10, 135 + 15 * i, 10, 10))
+            pygame.draw.rect(screen, (255, 255, 0), (0, 135 + 15 * i, 10, 10))
+
+    pygame.draw.rect(screen, (000, 90, 137), (WIDTH - 10, HEIGHT - 90, 10, 30))
+    pygame.draw.rect(screen, (000, 90, 137), (0, HEIGHT - 90, 10, 30))
+
+    # lives and score
+    text_lives = font_lives.render(str(lives), True, black)
+    text_points = font_points.render("%03d" % points, True, black)
+    display_surface.blit(text_lives, (580, 5))
+    display_surface.blit(text_points, (600, 25))
+
+    # ball
+    pygame.draw.rect(screen, (255, 255, 255), ball)
+    if 135 <= ball[1] < 165:
+        pygame.draw.rect(screen, (255, 0, 0), ball)
+    elif 165 <= ball[1] < 195:
+        pygame.draw.rect(screen, (255, 165, 0), ball)
+    elif 195 <= ball[1] < 225:
+        pygame.draw.rect(screen, (0, 255, 0), ball)
+    elif 225 <= ball[1] < 255:
+        pygame.draw.rect(screen, (255, 255, 0), ball)
+
+
+def commands(command):
+    global game_loop, player_move_right, player_move_left
+
+    if command.type == pygame.QUIT:
+        game_loop = False
+
+    if command.type == pygame.KEYDOWN:
+        if command.key == pygame.K_LEFT:
+            player_move_left = True
+        if command.key == pygame.K_RIGHT:
+            player_move_right = True
+
+    if command.type == pygame.KEYUP:
+        if command.key == pygame.K_LEFT:
+            player_move_left = False
+        if command.key == pygame.K_RIGHT:
+            player_move_right = False
+
+
+def animations():
+    # player pad animation
+    global ball_speed_y, player
+    if player_move_right and player[0] < (WIDTH - player[2] - right_wall[2]):
+        player[0] += 10
+
+    if player_move_left and player[0] > left_wall[2]:
+        player[0] -= 10
+
+    # ball animation
+    ball[0] += ball_speed_x
+    ball[1] += ball_speed_y
