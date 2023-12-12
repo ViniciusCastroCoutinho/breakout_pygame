@@ -178,7 +178,6 @@ def animations():
     ball[1] += ball_speed_y
 
 
-
 def colliders():
     global ball_speed_x, ball_speed_y, can_break, lives, points, game_over, hits, player
     if ball.colliderect(player) and ball_speed_y > 0:
