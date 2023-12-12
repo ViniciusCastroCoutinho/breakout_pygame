@@ -176,3 +176,98 @@ def animations():
     # ball animation
     ball[0] += ball_speed_x
     ball[1] += ball_speed_y
+
+
+
+def colliders():
+    global ball_speed_x, ball_speed_y, can_break, lives, points, game_over, hits, player
+    if ball.colliderect(player) and ball_speed_y > 0:
+        can_break = True
+        ball_collision_angle()
+        ball[1] -= ball_speed_y
+        ball_speed_y *= -1
+        bounce_sound_effect.play()
+
+    # collision with wall
+    if ball[0] > 700:
+        ball[0] -= ball_speed_x
+        ball_speed_x *= -1
+        bounce_sound_effect.play()
+    if ball[0] < 10:
+        ball[0] -= ball_speed_x
+        ball_speed_x *= -1
+        bounce_sound_effect.play()
+    if ball[1] < 60:
+        ball_speed_y *= -1
+        can_break = True
+        if not game_over:
+            player[2] = 35
+        bounce_sound_effect.play()
+
+    # collision with bricks
+    if 150 < ball[1] < 8 * 15 + 150:
+        brick_row = (ball[1] - 150) // 15
+        brick_column = ball[0] // 52
+        if (ball.colliderect(brick_list[brick_row][brick_column][0])
+                and brick_list[brick_row][brick_column][1] and can_break):
+            hits += 1
+            ball_speed_y *= -1
+            if ball_speed_y < 0:
+                ball[1] -= ball_speed_y
+            else:
+                ball[1] += ball_speed_y
+            can_break = False
+            if not game_over:
+                brick_list[brick_row][brick_column][1] = 0
+                if brick_row < 2:
+                    points += 7
+                elif brick_row < 4:
+                    points += 5
+                elif brick_row < 6:
+                    points += 3
+                else:
+                    points += 1
+            bounce_sound_effect.play()
+            # ball speed change
+            if not game_over:
+                if brick_row < 4:
+                    if ball_speed_y < 0:
+                        ball_speed_y = -12
+                    else:
+                        ball_speed_y = 12
+                elif ball_speed_y != 12 or ball_speed_y != -12:
+                    if hits == 4:
+                        if ball_speed_y < 0:
+                            ball_speed_y = -7
+                        else:
+                            ball_speed_y = 7
+                    elif hits == 12:
+                        if ball_speed_y < 0:
+                            ball_speed_y = -10
+                        else:
+                            ball_speed_y = 10
+
+    # ball falling off
+    if ball[1] > HEIGHT - 30:
+        ball_reset()
+        lives -= 1
+        if lives == 0:
+            game_over = True
+            player[0] = 0
+            player[2] = WIDTH
+
+
+while game_loop:
+    # place the visuals
+    visuals()
+    # search for commands
+    for event in pygame.event.get():
+        commands(event)
+
+    # produce the animations
+    animations()
+    colliders()
+    pygame.display.flip()
+    game_clock.tick(60)
+
+pygame.quit()
